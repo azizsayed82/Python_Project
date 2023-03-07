@@ -1,0 +1,122 @@
+from tkinter import *
+import pygame
+import os
+
+
+root=Tk()
+
+#size
+root.geometry("600x500")
+
+#fix the size
+root.resizable(0,0)
+
+#rename of file
+root.title("Music player")
+
+#status
+status=StringVar()
+
+#initialing pygame
+pygame.init()
+
+#mixer
+pygame.mixer.init()
+
+def playsong():
+    
+    songtrack.config(state=NORMAL)
+    songtrack.delete('1.0',END)
+    songtrack.insert('1.0',playlist.get(ACTIVE))
+    songtrack.config(state=DISABLED)
+    status.set("playing")
+
+    pygame.mixer.music.load(playlist.get(ACTIVE))
+    pygame.mixer.music.play()
+
+def stopsong():
+    songtrack.config(state=NORMAL)
+    songtrack.delete('1.0',END)
+    songtrack.config(state=DISABLED)
+    status.set("stop")
+    pygame.mixer.music.stop()
+def pausesong():
+    
+    status.set("pause")
+    pygame.mixer.music.pause()
+def unpausesong():
+    
+    status.set("playing")
+    pygame.mixer.music.unpause()
+
+
+def nextsong():
+    status.set("next")
+    pygame.mixer.music.next()
+   
+#frame of track
+trackframe=LabelFrame(root, text='Track',font=("Times New Roman",16,"bold"),bg='black', fg='white',relief=GROOVE)
+
+trackframe.place(x=0,y=250, width=600,height=120)
+songtrack=Text(trackframe,width=40,height=2,font=("arial",16),bg='#8a1553',fg='white',state=DISABLED)
+songtrack.grid(row=0,column=0,padx=10,pady=5)
+trackstatus=Label(trackframe,textvariable=status,font=("Times New Roman",16),bg='black',fg='white')
+trackstatus.grid(row=0,column=1,padx=10,pady=5)
+
+#frame of control panel
+buttonframe=LabelFrame(root,text='Control Panel',font=("Times New Roman",16),bg='black',fg='white',relief=GROOVE , pady=10)
+
+buttonframe.place(x=0,y=320,width=600,height=100)
+
+#play key
+playbtn=Button(buttonframe,text='Play',width=10,height=1,font=('arial',16),bg='black',fg='white',command=playsong)
+
+playbtn.grid(row=0,column=0,padx=10,pady=5)
+
+#pause key
+pausebtn=Button(buttonframe,text='Pause',width=10,height=1,font=('arial',16),bg='black',fg='white',command=pausesong)
+
+pausebtn.grid(row=0,column=1,padx=10,pady=5)
+
+#unpause key
+unpausebtn=Button(buttonframe,text='Unpause',width=10,height=1,font=('arial',16),bg='black',fg='white',command=unpausesong)
+
+unpausebtn.grid(row=0,column=2,padx=10,pady=5)
+
+#stop key
+stopbtn=Button(buttonframe,text='Stop',width=10,height=1,font=('arial',16),bg='black',fg='white',command=stopsong)
+
+stopbtn.grid(row=0,column=3,padx=10,pady=5)
+
+#next key
+nextbtn=Button(buttonframe,text='next',width=10,height=1,font=('arial',16),bg='black',fg='white',command=nextsong)
+
+nextbtn.grid(row=0,column=4,padx=10,pady=5)
+
+
+#songs frame
+songs=LabelFrame(root,text='Songs',font=('arial',16,'bold'),bg='grey',fg='white',bd=5,relief=GROOVE)
+songs.place(x=0,y=0,width=600,height=200)
+
+#scroll bar
+scroll_y=Scrollbar(songs,orient=VERTICAL)
+
+#playlist
+playlist=Listbox(songs,selectbackground='green',selectmode=SINGLE,font=('arial',12),
+                 bg='black',fg='#be254a',bd=5,relief=GROOVE,yscrollcommand=scroll_y.set)
+scroll_y.pack(side=RIGHT,fill=Y)
+scroll_y.config(command=playlist.yview)
+playlist.pack(fill=BOTH)
+
+#changing folder of player
+os.chdir("E:\Aziz")
+
+#show list of musics
+songtracks=os.listdir()
+for track in songtracks:
+    if ".mp3" in track:
+        playlist.insert(END,track)
+    else:
+        pass
+
+root.mainloop()
